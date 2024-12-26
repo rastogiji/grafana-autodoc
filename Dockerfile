@@ -14,4 +14,4 @@ COPY --from=builder /app/main .
 RUN ls -l /root
 RUN chmod +x /root/main
 
-ENTRYPOINT ["./main"]
+ENTRYPOINT ["/root/main"]
