@@ -4,7 +4,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -o main .
+RUN go build -o /app/main .
 
 # Stage 2: Create a lean production image
 FROM alpine:latest
