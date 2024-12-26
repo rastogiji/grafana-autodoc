@@ -7,6 +7,7 @@ import (
 
 func getTemplate() *template.Template {
 	mdTemplate := `# {{.Title}}
+{{.Description}}
 
 | Panel Name | Panel Description | Panel Type | Metrics Used |
 | ---------- | ----------------- | ---------- | -------- |

@@ -6,15 +6,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"runtime/pprof"
 	"strings"
 
 	"github.com/rastogiji/autodoc-grafana/utils"
 )
 
 type MarkdownData struct {
-	Title  string
-	Panels []panelData
+	Title       string
+	Description string
+	Panels      []panelData
 }
 
 type panelData struct {
@@ -25,18 +25,12 @@ type panelData struct {
 }
 
 func main() {
-	pf, err := os.Create("cpu.prof")
-	if err != nil {
-		log.Fatal("could not create CPU profile: ", err)
-	}
-	defer pf.Close()
-	pprof.StartCPUProfile(pf)
-	defer pprof.StopCPUProfile()
 	if len(os.Args) != 2 {
 		log.Println("A Dashboard file is required as an argument.")
 		os.Exit(1)
 	}
 	dashboard := os.Args[1]
+	fmt.Println(dashboard)
 	if dashboard == "" || !utils.IsValidFile(dashboard) || !strings.HasSuffix(strings.ToLower(dashboard), ".json") {
 		log.Println("Valid dashboard file path is required as an argument.")
 		os.Exit(1)
@@ -61,6 +55,7 @@ func main() {
 	var data MarkdownData
 
 	data.Title = dash.Title
+	data.Description = dash.Description
 
 	for _, panel := range dash.GetPanels() {
 		var pd panelData

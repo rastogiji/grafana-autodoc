@@ -32,9 +32,10 @@ type Panel struct {
 }
 
 type Dashboard struct {
-	Title  string     `json:"title"`
-	Links  []Link     `json:"links"`
-	Panels []RowPanel `json:"panels"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Links       []Link     `json:"links"`
+	Panels      []RowPanel `json:"panels"`
 }
 
 // GetPanels returns all the panels from the dashboard regardless of the nesting
