@@ -1,11 +1,6 @@
 name: Release Github Action to Marketplace
 on:
     push:
-        paths-ignore:
-            - 'README.md'
-            - 'LICENSE'
-            - .gitignore
-            - '.github/**'
         tags:
             - 'v*.*.*'
 jobs:
