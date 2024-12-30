@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
       - name: Generate Documentation
-        uses: rastogiji/grafana-autodoc@main
+        uses: rastogiji/grafana-autodoc@v0
         with:
           dashboard: ${{ matrix.file }}
       - name: Get MD file
