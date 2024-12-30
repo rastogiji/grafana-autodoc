@@ -30,7 +30,6 @@ func main() {
 		os.Exit(1)
 	}
 	dashboard := os.Args[1]
-	fmt.Println(dashboard)
 	if dashboard == "" || !utils.IsValidFile(dashboard) || !strings.HasSuffix(strings.ToLower(dashboard), ".json") {
 		log.Println("Valid dashboard file path is required as an argument.")
 		os.Exit(1)
