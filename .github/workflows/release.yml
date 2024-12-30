@@ -1,0 +1,44 @@
+name: Release Github Action to Marketplace
+on:
+    push:
+        paths-ignore:
+            - 'README.md'
+            - 'LICENSE'
+            - .gitignore
+            - '.github/**'
+        tags:
+            - 'v*.*.*'
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+            - name: Generate release changelog
+              id: changelog
+              uses: janheinrichmerker/action-github-changelog-generator@v2.3
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Get Release Tag
+              id: get_release_tag
+              run: echo "RELEASE_TAG=$(echo $GITHUB_REF | cut -d '/' -f 3)" >> $GITHUB_OUTPUT
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: ${{ steps.get_release_tag.outputs.RELEASE_TAG }}
+                  body: |
+                    Changes in this Release:
+                    ${{ steps.changelog.outputs.changelog }}
+                  draft: false
+                  prerelease: false
+              
+            
+

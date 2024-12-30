@@ -6,7 +6,6 @@ inputs:
     description: "Dashboard's json file path"
     required: true
     default: ''
-
 runs:
   using: 'docker'
   image: 'Dockerfile'
