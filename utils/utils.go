@@ -2,13 +2,18 @@ package utils
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/prometheus/prometheus/promql/parser"
+	"os"
+	"strings"
 )
 
 func IsValidFile(filePath string) bool {
 	_, err := os.Stat(filePath)
+	return !os.IsNotExist(err)
+}
+
+func IsValidDirectory(dirPath string) bool {
+	_, err := os.Stat(dirPath)
 	return !os.IsNotExist(err)
 }
 
@@ -49,4 +54,18 @@ func GetUniqueElements[T comparable](s []T) []T {
 		}
 	}
 	return list
+}
+
+func RetrieveFilesFromDirectory(dirPath string) ([]string, error) {
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return nil, err
+	}
+	var jsonFiles []string
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(strings.ToLower(file.Name()), ".json") {
+			jsonFiles = append(jsonFiles, file.Name())
+		}
+	}
+	return jsonFiles, nil
 }
