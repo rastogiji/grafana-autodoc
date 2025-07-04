@@ -41,7 +41,8 @@ func createDocumentationFromFile(dashboard string, outputDir string) {
 		log.Fatal(err)
 	}
 
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s.md", outputDir, strings.TrimSuffix(filepath.Base(dashboard), ".json")), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	fileName := filepath.Join(outputDir, strings.TrimSuffix(filepath.Base(dashboard), ".json")+".md")
+	f, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
