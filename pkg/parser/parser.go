@@ -101,6 +101,7 @@ func CreateDocumentationFromFile(dashboard string, outputDir string) error {
 	data.Title = dash.Title
 	data.Description = dash.Description
 
+	// TODO: Refine this fairly ugly piece of code
 	for _, panel := range dash.GetPanels() {
 		var pd panelData
 		var metrics []string
@@ -109,6 +110,7 @@ func CreateDocumentationFromFile(dashboard string, outputDir string) error {
 			pd.Description = strings.ReplaceAll(panel.Description, "\n", "\\n")
 			pd.Type = panel.Type
 			for _, target := range panel.Targets {
+				// Replacing these since promql parser doesn't support these grafana native vars
 				replacer := strings.NewReplacer("$__range", "1m", "$__rate_interval", "1m", "$interval", "1m")
 				tg := replacer.Replace(target.Expr)
 				allMetrics, err := extractMetricFromExpression(tg)
