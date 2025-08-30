@@ -1,0 +1,145 @@
+{
+  "id": null,
+  "uid": "sample-dashboard",
+  "title": "Sample Dashboard",
+  "tags": ["example", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Pod CPU Usage",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(container_cpu_usage_seconds_total{namespace=\"default\"}[5m])",
+          "legendFormat": "{{pod}} - CPU rate"
+        },
+        {
+          "expr": "avg(node_cpu_seconds_total{mode=\"user\"})",
+          "legendFormat": "Node CPU User Avg"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Pod Memory Usage",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{namespace=\"default\"}",
+          "legendFormat": "{{pod}} - Mem usage"
+        },
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"default\"})",
+          "legendFormat": "Total Mem Working Set"
+        },
+        {
+          "expr": "sum by (node) (container_memory_usage_bytes{namespace=\"default\"})",
+          "legendFormat": "Node {{node}} Memory"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Network Traffic",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(container_network_receive_bytes_total{namespace=\"default\"}[5m])",
+          "legendFormat": "{{pod}} RX"
+        },
+        {
+          "expr": "rate(container_network_transmit_bytes_total{namespace=\"default\"}[5m])",
+          "legendFormat": "{{pod}} TX"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Pod Restarts & Availability",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "kube_pod_container_status_restarts_total{namespace=\"default\"}",
+          "legendFormat": "{{pod}} restarts"
+        },
+        {
+          "expr": "kube_pod_status_phase{phase=\"Running\",namespace=\"default\"}",
+          "legendFormat": "{{pod}} running"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Requests & Latency",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"my-service\"}[5m])",
+          "legendFormat": "Requests rate"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"my-service\"}[5m])) by (le))",
+          "legendFormat": "P95 latency"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"my-service\"}[5m])) by (le))",
+          "legendFormat": "P99 latency"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
