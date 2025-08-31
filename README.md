@@ -1,5 +1,6 @@
 # Grafana Autodoc
 [![Coverage Status](https://coveralls.io/repos/github/rastogiji/grafana-autodoc/badge.svg?branch=main)](https://coveralls.io/github/rastogiji/grafana-autodoc?branch=main)
+
 This tool generates documentation for Grafana Dashboards from their json representation. Even though you can use this tool as a standalone binary or as a kubectl plugin, it is intended to be used a Github Action to generate documentation for your Grafana Dashboards as code.
 
 ## Example Usage
