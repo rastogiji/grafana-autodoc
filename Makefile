@@ -7,7 +7,7 @@ build:
 
 .PHONY: test
 test:
-	go test `go list ./... | grep -v test/` -v -coverprofile cover.out
+	go test `go list ./... | grep -v test/` -v -coverprofile cover.out -covermode=atomic
 
 .PHONY: coverage
 coverage:
