@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/rastogiji/grafana-autodoc/compare/v0.1.0...v0.2.0) (2025-08-31)
+
+
+### Features
+
+* updated action.yaml with new args ([50df5cd](https://github.com/rastogiji/grafana-autodoc/commit/50df5cd5ac692a34cbf75c7c7e039d9e713b9e9a))
+
 # [0.1.0](https://github.com/rastogiji/grafana-autodoc/compare/v0.0.2...v0.1.0) (2025-08-31)
 
 
