@@ -3,7 +3,7 @@ description: 'Automatically Generate Documentation for your Grafana Dashboards a
 author: 'Animesh Rastogi'
 inputs:
   dashboard_files:
-    description: "file path, directory or glob patters containing the json representations of your grafana dashboard(s)"
+    description: "file path, directory or glob patterns containing the json representations of your grafana dashboard(s)"
     required: true
   output_dir:
     description: "output directory where to generate the markdown files"
