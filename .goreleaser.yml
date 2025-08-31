@@ -16,6 +16,13 @@ builds:
     goarch:
       - arm64
       - amd64
+    main: ./cmd
+    binary: grafana-autodoc
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
 
 archives:
   - format: tar.gz
@@ -50,7 +57,7 @@ brews:
     install: |
       bin.install "grafana-autodoc"
     test: |
-      system "#{bin}/grafana-autodoc --help"
+      system "#{bin}/grafana-autodoc --version"
     repository:
       owner: rastogiji
       name: homebrew-tap

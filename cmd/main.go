@@ -20,6 +20,11 @@ import (
 )
 
 var (
+	// Version information - set during build time via ldflags
+	version = "dev"     // Default to "dev" for development builds
+	commit  = "unknown" // Git commit hash
+	date    = "unknown" // Build date
+
 	// input specifies the path to dashboard file, directory, or glob pattern
 	input string
 	// output specifies the path to output directory where markdown files will be generated
@@ -28,6 +33,8 @@ var (
 	logLevel int
 	// help indicates whether to show the help message
 	help bool
+	// showVersion indicates whether to show version information
+	showVersion bool
 	// setupLog is the initial logger used for setup and validation phases
 	setupLog = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	// out is the output writer, configurable for testing
@@ -63,11 +70,18 @@ func (r *runner) run() error {
 	cli.StringVar(&output, "output", ".", "Path to output directory where markdown files will be generated (default: current directory)")
 	cli.IntVar(&logLevel, "log-level", 0, "Debug: -4, Info: 0, Warn: 4, Error: 8 (default: Info)")
 	cli.BoolVar(&help, "help", false, "Show help message")
+	cli.BoolVar(&showVersion, "version", false, "Show version information")
 
 	cli.Parse(os.Args[1:])
 
 	if help {
-		flag.Usage()
+		fmt.Fprintf(out, "Usage of %s:\n", os.Args[0])
+		cli.PrintDefaults()
+		return nil
+	}
+
+	if showVersion {
+		printVersion()
 		return nil
 	}
 
@@ -87,6 +101,18 @@ func (r *runner) run() error {
 
 	slog.Info("beginning processing files")
 	return r.fileProcessor()
+}
+
+// printVersion outputs version information to stdout in a formatted manner.
+// It displays the version, commit hash, and build date if available.
+func printVersion() {
+	fmt.Fprintf(out, "grafana-autodoc %s\n", version)
+	if commit != "unknown" {
+		fmt.Fprintf(out, "commit: %s\n", commit)
+	}
+	if date != "unknown" {
+		fmt.Fprintf(out, "built: %s\n", date)
+	}
 }
 
 // processFiles handles the actual file processing logic based on the input type.
