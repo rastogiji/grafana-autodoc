@@ -30,6 +30,5 @@ jobs:
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          path-to-lcov: cover.out
-          format: golang
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: cover.out
