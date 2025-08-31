@@ -1,0 +1,35 @@
+# Runs Tests when a PR is raised against main
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+        - main
+    paths-ignore:
+        - README.md
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: PR
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+            
+      - name: Download dependencies
+        run: go mod download
+        
+      - name: Run tests
+        run: make test
+        
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          path-to-lcov: cover.out
+          format: golang
