@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   test:
@@ -54,7 +55,7 @@ jobs:
           
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
-        if: steps.semantic.outputs.new_release_published == 'true'
+        if: steps.semantic.outputs.new_release_published == 'true' || github.event_name == 'workflow_dispatch'
         with:
           distribution: goreleaser
           version: '~> v2'
