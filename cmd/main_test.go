@@ -13,15 +13,26 @@ import (
 
 func TestRun(t *testing.T) {
 	tests := []struct {
-		name           string
-		args           []string
-		expectError    bool
-		errorMsg       string
-		expectedInput  string
-		expectedOutput string
-		expectedLevel  int
-		expectedHelp   bool
+		name            string
+		args            []string
+		expectError     bool
+		errorMsg        string
+		expectedInput   string
+		expectedOutput  string
+		expectedLevel   int
+		expectedHelp    bool
+		expectedVersion bool
 	}{
+		{
+			name:            "version flag should return no error and set version to true",
+			args:            []string{"program", "--version"},
+			expectError:     false,
+			expectedVersion: true,
+			expectedInput:   "",
+			expectedOutput:  ".",
+			expectedLevel:   0,
+			expectedHelp:    false,
+		},
 		{
 			name:           "help flag should return no error and set help to true",
 			args:           []string{"program", "--help"},
@@ -110,10 +121,12 @@ func TestRun(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			// Reset global variables
 			input = ""
 			output = "."
 			logLevel = 0
 			help = false
+			showVersion = false
 
 			var buf bytes.Buffer
 			out = &buf
@@ -121,6 +134,16 @@ func TestRun(t *testing.T) {
 			os.Args = tc.args
 
 			mockFileProcessor := func() error {
+				switch {
+				case logLevel <= -4:
+					slog.Debug("Mock file processor executed")
+				case logLevel <= 0:
+					slog.Info("Mock file processor executed")
+				case logLevel <= 4:
+					slog.Warn("Mock file processor executed")
+				default:
+					slog.Error("Mock file processor executed")
+				}
 				return nil
 			}
 
@@ -144,12 +167,16 @@ func TestRun(t *testing.T) {
 			assert.Equal(t, tc.expectedOutput, output, "Output flag should be parsed correctly")
 			assert.Equal(t, tc.expectedLevel, logLevel, "Log level flag should be parsed correctly")
 			assert.Equal(t, tc.expectedHelp, help, "Help flag should be parsed correctly")
+			assert.Equal(t, tc.expectedVersion, showVersion, "Version flag should be parsed correctly")
 
-			if !tc.expectedHelp {
+			if tc.expectedVersion {
+				// Check that version information was printed
+				output := buf.String()
+				assert.Contains(t, output, "grafana-autodoc", "Version output should contain program name")
+				assert.Contains(t, output, version, "Version output should contain version")
+			} else if !tc.expectedHelp {
 				logOutput := buf.String()
-
 				assert.NotEmpty(t, logOutput, "Logger should have been initialized and used")
-
 				assert.Contains(t, logOutput, fmt.Sprintf(`"log-level":%d`, tc.expectedLevel))
 				assert.Contains(t, logOutput, fmt.Sprintf(`"input":"%s"`, tc.expectedInput))
 				assert.Contains(t, logOutput, fmt.Sprintf(`"output":"%s"`, tc.expectedOutput))
@@ -469,6 +496,105 @@ func TestValidateFlagValues(t *testing.T) {
 				assert.NotEmpty(t, buf.String(), "Expected error to be logged")
 			} else {
 				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+// TestPrintVersion tests the printVersion function with different version information scenarios
+func TestPrintVersion(t *testing.T) {
+	tests := []struct {
+		name              string
+		version           string
+		commit            string
+		date              string
+		expectedOutput    []string
+		notExpectedOutput []string
+	}{
+		{
+			name:    "development version with unknown commit and date",
+			version: "dev",
+			commit:  "unknown",
+			date:    "unknown",
+			expectedOutput: []string{
+				"grafana-autodoc dev",
+			},
+			notExpectedOutput: []string{
+				"commit:",
+				"built:",
+			},
+		},
+		{
+			name:    "release version with commit and date",
+			version: "v1.2.3",
+			commit:  "abc123def456789",
+			date:    "2024-01-15T10:30:45Z",
+			expectedOutput: []string{
+				"grafana-autodoc v1.2.3",
+				"commit: abc123def456789",
+				"built: 2024-01-15T10:30:45Z",
+			},
+		},
+		{
+			name:    "version with commit but unknown date",
+			version: "v1.0.0",
+			commit:  "def456abc123",
+			date:    "unknown",
+			expectedOutput: []string{
+				"grafana-autodoc v1.0.0",
+				"commit: def456abc123",
+			},
+			notExpectedOutput: []string{
+				"built:",
+			},
+		},
+		{
+			name:    "version with date but unknown commit",
+			version: "v2.0.0-beta",
+			commit:  "unknown",
+			date:    "2024-02-20T14:15:30Z",
+			expectedOutput: []string{
+				"grafana-autodoc v2.0.0-beta",
+				"built: 2024-02-20T14:15:30Z",
+			},
+			notExpectedOutput: []string{
+				"commit:",
+			},
+		},
+		{
+			name:    "empty version string",
+			version: "",
+			commit:  "unknown",
+			date:    "unknown",
+			expectedOutput: []string{
+				"grafana-autodoc ",
+			},
+			notExpectedOutput: []string{
+				"commit:",
+				"built:",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			version = tc.version
+			commit = tc.commit
+			date = tc.date
+
+			var buf bytes.Buffer
+			out = &buf
+
+			printVersion()
+
+			output := buf.String()
+
+			for _, expected := range tc.expectedOutput {
+				assert.Contains(t, output, expected, "Output should contain: %s", expected)
+			}
+
+			for _, notExpected := range tc.notExpectedOutput {
+				assert.NotContains(t, output, notExpected, "Output should NOT contain: %s", notExpected)
 			}
 		})
 	}
