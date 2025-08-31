@@ -2,15 +2,21 @@ name: 'Grafana Autodoc'
 description: 'Automatically Generate Documentation for your Grafana Dashboards as code.'
 author: 'Animesh Rastogi'
 inputs:
-  dashboard:
-    description: "Dashboard's json file path"
+  dashboard_files:
+    description: "file path, directory or glob patters containing the json representations of your grafana dashboard(s)"
     required: true
-    default: ''
+  output_dir:
+    description: "output directory where to generate the markdown files"
+    required: false
+    default: '.'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.dashboard }}
+    - --input
+    - ${{ inputs.dashboard_files }}
+    - --output
+    - ${{ inputs.output_dir }}
 
 branding:
   icon: 'package'
