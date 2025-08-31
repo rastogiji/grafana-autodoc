@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   test:
@@ -52,18 +53,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           
-      - name: Check if tag exists
-        id: check_tag
-        run: |
-          if git tag --points-at HEAD | head -1; then
-            echo "has_tag=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_tag=false" >> $GITHUB_OUTPUT
-          fi
-          
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
-        if: steps.semantic.outputs.new_release_published == 'true' || steps.check_tag.outputs.has_tag == 'true'
+        if: steps.semantic.outputs.new_release_published == 'true' || github.event_name == 'workflow_dispatch' 
         with:
           distribution: goreleaser
           version: '~> v2'
