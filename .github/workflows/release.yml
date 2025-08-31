@@ -28,13 +28,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          path-to-lcov: cover.out
-          format: golang
-          
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         if: steps.semantic.outputs.new_release_published == 'true'
